@@ -31,6 +31,7 @@ case "$mode" in
         for group in $(id -G); do group_args+=(--group-add "$group"); done
         docker run --rm --runtime nvidia "${group_args[@]}" --network none --user "$(id -u):$(id -g)" \
             -e HOME=/tmp -e UV_CACHE_DIR=/tmp/uv \
+            -e LD_PRELOAD=/usr/lib/aarch64-linux-gnu/nvidia/libcuda.so.1 \
             -v "$root/jetson/verify.py:/verify.py:ro" -v "$out:/wheels:ro" \
             -w /tmp "$image" -c \
             'uv venv --python /opt/venv/bin/python --system-site-packages /tmp/verify-env && uv pip install --python /tmp/verify-env/bin/python --no-deps /wheels/torch-*.whl /wheels/torchvision-*.whl && /tmp/verify-env/bin/python /verify.py' \
