@@ -429,7 +429,10 @@ function(torch_compile_options libname)
   if(USE_CUDA)
     foreach(option IN LISTS private_compile_options)
       if(CMAKE_CUDA_HOST_COMPILER_ID STREQUAL "GNU")
-        if("${option}" STREQUAL "-Wextra-semi")
+        # CXX can be Clang while NVCC's host compiler is GCC.
+        if("${option}" STREQUAL "-Wextra-semi"
+            OR "${option}" STREQUAL "-Wmove"
+            OR "${option}" STREQUAL "-Wno-deprecated-literal-operator")
           continue()
         endif()
       endif()

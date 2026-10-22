@@ -1214,7 +1214,7 @@ if(USE_CUDA AND CUDA_VERSION VERSION_LESS 13.0)
   include_directories(SYSTEM ${CUB_INCLUDE_DIRS})
 endif()
 
-if(USE_CUDA AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+if(USE_CUDA AND CMAKE_CUDA_HOST_COMPILER_ID MATCHES "Clang")
   # NVCC inserts whitespace into literal operators, triggering a spurious Clang warning.
   string(APPEND CMAKE_CUDA_FLAGS " -Xcompiler -Wno-deprecated-literal-operator")
 endif()

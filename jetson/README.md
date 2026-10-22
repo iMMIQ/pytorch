@@ -38,3 +38,5 @@ Torchvision 0.29.1 is built from upstream commit `1f1a920d685d46dfbe187934b785b7
 ## Local compiler compatibility patch
 
 `cmake/public/cuda.cmake` selects the Clang ABI compatibility flag from NVCC's actual host compiler identity, rather than the independent C++ compiler. This profile uses Clang 20 for C++ and GCC 11 for CUDA host compilation. Passing `-fclang-abi-compat=17` to GCC fails before any CUDA kernel compiles. CMake 4.4 records the host compiler identity used by this patch; the native CUDA build exercises the corrected flags.
+
+The CUDA warning path also filters Clang-only warning options before forwarding them to GCC through NVCC. A standalone CUDA compile reproduces GCC rejecting `-Wmove`; the resumed native operator build validates the filtered command. The C++ compiler retains its own supported warnings.
