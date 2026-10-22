@@ -11,6 +11,7 @@ RUN /usr/local/bin/uv python install 3.12.15 \
  && /usr/local/bin/uv pip check --python /opt/venv/bin/python \
  && rm /tmp/build-requirements.lock
 ENV PATH=/opt/venv/bin:/usr/local/cuda/bin:${PATH} PYTHONPATH=""
+ENV TORCH_ALLOW_TF32_CUBLAS_OVERRIDE=0
 ENV OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 PYTHONDONTWRITEBYTECODE=1
 WORKDIR /src
 ENTRYPOINT ["/bin/bash"]

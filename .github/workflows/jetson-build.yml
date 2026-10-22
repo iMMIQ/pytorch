@@ -17,6 +17,8 @@ jobs:
           submodules: recursive
       - name: Build native wheel
         run: bash jetson/run.sh build
+      - name: Build matching torchvision
+        run: bash jetson/run.sh vision
       - name: Verify on Orin
         env:
           JETSON_GPU_LOCK: ${{ vars.JETSON_GPU_LOCK }}

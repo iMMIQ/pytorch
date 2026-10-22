@@ -2,15 +2,16 @@
 
 This fork maintains the native Torch build used by [orinfer](https://github.com/iMMIQ/orinfer). The first profile targets Jetson AGX Orin 64GB, L4T R36.4, CUDA 12.6, SM87 and CPython 3.12.15. It builds all Torch native libraries and Python bindings from source. It does not repackage a prebuilt Torch wheel.
 
-Upstream base: PyTorch v2.11.0, commit `70d99e998b4955e0049d13a98d77ae1b14db1f45`. Our package version is `2.11.0+orinfer1`. Upstream licenses and third-party notices are retained in the wheel.
+Upstream base: PyTorch v2.14.1, commit `5c4886908584029761b579af026dcfb627c84070`. Our package version is `2.14.1+orinfer1`. Upstream licenses and third-party notices are retained in the wheel.
 
 ## Build
 
 ```bash
-git clone --branch jetson-r36.4-cu126-py312 https://github.com/iMMIQ/pytorch.git pytorch-jetson
+git clone --branch jetson-r36.4-cu126-py312-v2.14 https://github.com/iMMIQ/pytorch.git pytorch-jetson
 cd pytorch-jetson
 git submodule update --init --recursive --depth 1 --jobs 4
 MAX_JOBS=6 bash jetson/run.sh build
+MAX_JOBS=6 bash jetson/run.sh vision
 JETSON_GPU_LOCK=/path/to/orinfer/artifacts/gpu-experiment.lock bash jetson/run.sh test
 ```
 
@@ -32,4 +33,4 @@ Advance the upstream base and local package revision together, refresh the locke
 
 The manual `Jetson Torch wheel` workflow uses a native self-hosted runner with labels `linux`, `ARM64`, `jetson-orin` and repository variable `JETSON_GPU_LOCK`. It retains outputs on the runner and does not publish them automatically.
 
-Torchvision and other compiled extensions must be built against the matching Torch ABI. General aarch64 CUDA wheels are not assumed to support SM87.
+Torchvision 0.29.1 is built from upstream commit `1f1a920d685d46dfbe187934b785b7ecb7a182f2` with our newly built Torch. Its version is `0.29.1+orinfer1`; the acceptance check runs its CUDA NMS operator. Other compiled extensions must be built against the matching Torch ABI. General aarch64 CUDA wheels are not assumed to support SM87.

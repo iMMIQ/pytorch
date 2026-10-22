@@ -4,7 +4,7 @@ cd "$(dirname "$0")/.."
 source jetson/profile.env
 [[ $(uname -m) == aarch64 ]] || { echo 'Native aarch64 builder required' >&2; exit 1; }
 python -c 'import sys; assert sys.version_info[:3] == (3, 12, 15)'
-git merge-base --is-ancestor 70d99e998b4955e0049d13a98d77ae1b14db1f45 HEAD
+git merge-base --is-ancestor 5c4886908584029761b579af026dcfb627c84070 HEAD
 git diff --exit-code --quiet
 git diff --cached --exit-code --quiet
 if git submodule status --recursive | grep -E '^[-+U]'; then
