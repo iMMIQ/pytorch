@@ -1,3 +1,5 @@
+**Torch for Jetson:** this fork maintains the native SM87 / CUDA 12.6 / Python 3.12 build used by [orinfer](https://github.com/iMMIQ/orinfer). See [build, verification and release instructions](jetson/README.md).
+
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://github.com/pytorch/pytorch/raw/main/docs/source/_static/img/pytorch-logo-light.png" />
   <source media="(prefers-color-scheme: light)" srcset="https://github.com/pytorch/pytorch/raw/main/docs/source/_static/img/pytorch-logo-dark.png" />

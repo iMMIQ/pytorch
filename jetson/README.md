@@ -25,7 +25,7 @@ The build uses the upstream PEP 517 backend without build isolation or network a
 
 ## NVIDIA recipe basis
 
-The reference is NVIDIA Jetson maintainer's [jetson-containers PyTorch build](https://github.com/dusty-nv/jetson-containers/tree/467ca0bf6ee8c6e51c71fd113830b4b010deed84/packages/ml/pytorch). Its recipe explicitly selects OpenBLAS and target CUDA architectures, builds from source, and uses CUDA 12.6 fatbin compression and ARM prioritized linking. This profile preserves those essentials, pins the source instead of falling back to a moving branch, and separates compilation from acceptance and publication. Only the supported SM87 target is emitted. No SVE capability is assumed on Orin.
+The reference is NVIDIA Jetson maintainer's [jetson-containers PyTorch build](https://github.com/dusty-nv/jetson-containers/tree/467ca0bf6ee8c6e51c71fd113830b4b010deed84/packages/ml/pytorch). Its recipe explicitly selects OpenBLAS and target CUDA architectures, builds from source, and uses CUDA 12.6 fatbin compression and ARM prioritized linking. This profile preserves those essentials, pins the source instead of falling back to a moving branch, and separates compilation from acceptance and publication. Only the supported SM87 target is emitted. The profile explicitly disables SVE capability builds and SLEEF SVE on Orin; NEON remains available.
 
 ## Updates and releases
 

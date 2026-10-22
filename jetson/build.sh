@@ -19,5 +19,8 @@ cp jetson/profile.env "$out/profile.env"
 dpkg-query -W -f='${Package}\t${Version}\n' > "$out/system-packages.tsv"
 uv pip freeze --python /opt/venv/bin/python > "$out/python-packages.txt"
 # The PEP 517 frontend uses the pinned environment, without dependency downloads.
-python -m build --wheel --no-isolation --outdir "$out"
+python -m build --wheel --no-isolation --outdir "$out" \
+    --config-setting=cmake.define.CXX_SVE256_FOUND=OFF \
+    --config-setting=cmake.define.CXX_SVE_FOUND=OFF \
+    --config-setting=cmake.define.SLEEF_DISABLE_SVE=ON
 python jetson/manifest.py "$out"
