@@ -34,7 +34,7 @@ case "$mode" in
             -e LD_PRELOAD=/usr/lib/aarch64-linux-gnu/nvidia/libcuda.so.1 \
             -v "$root/jetson/verify.py:/verify.py:ro" -v "$out:/wheels:ro" \
             -w /tmp "$image" -c \
-            'uv venv --python /opt/venv/bin/python --system-site-packages /tmp/verify-env && uv pip install --python /tmp/verify-env/bin/python --no-deps /wheels/torch-*.whl /wheels/torchvision-*.whl && /tmp/verify-env/bin/python /verify.py' \
+            'export PYTHONPATH=$(/opt/venv/bin/python -c "import sysconfig; print(sysconfig.get_path(\"purelib\"))"); uv venv --python /opt/venv/bin/python /tmp/verify-env && uv pip install --python /tmp/verify-env/bin/python --no-deps /wheels/torch-*.whl /wheels/torchvision-*.whl && /tmp/verify-env/bin/python /verify.py' \
             > "$out/verification.json"
         ;;
     *) echo 'Usage: jetson/run.sh {build|vision|test} [output-directory]' >&2; exit 2 ;;

@@ -5,7 +5,9 @@ out=$(realpath "$2")
 expected=1f1a920d685d46dfbe187934b785b7ecb7a182f2
 [[ $(git -C "$source_dir" rev-parse HEAD) == "$expected" ]]
 git -C "$source_dir" diff --exit-code --quiet
-uv venv --python /opt/venv/bin/python --system-site-packages /tmp/vision-env
+uv venv --python /opt/venv/bin/python /tmp/vision-env
+# A venv's system-site-packages refers to CPython, not a parent venv.
+export PYTHONPATH=$(/opt/venv/bin/python -c 'import sysconfig; print(sysconfig.get_path("purelib"))')
 uv pip install --python /tmp/vision-env/bin/python --no-deps "$out"/torch-2.14.1+orinfer1-*.whl
 export PATH=/tmp/vision-env/bin:$PATH
 export CC=/usr/bin/gcc-11 CXX=/usr/bin/g++-11
