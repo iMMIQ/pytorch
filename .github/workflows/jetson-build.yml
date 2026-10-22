@@ -1,0 +1,25 @@
+name: Jetson Torch wheel
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: jetson-torch-builder
+  cancel-in-progress: false
+jobs:
+  build:
+    if: github.repository == 'iMMIQ/pytorch'
+    runs-on: [self-hosted, linux, ARM64, jetson-orin]
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: recursive
+      - name: Build native wheel
+        run: bash jetson/run.sh build
+      - name: Verify on Orin
+        env:
+          JETSON_GPU_LOCK: ${{ vars.JETSON_GPU_LOCK }}
+        run: bash jetson/run.sh test
+      - name: Record output directory
+        run: echo "Artifacts retained on the runner in $PWD/jetson/artifacts"
