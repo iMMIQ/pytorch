@@ -366,8 +366,9 @@ elseif(CUDA_DEVICE_DEBUG)
   list(APPEND CUDA_NVCC_FLAGS "-g" "-G")  # -G enables device code debugging symbols
 endif()
 
-# needed for compat with newer versions of clang that use C++20 mangling rules
-if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 18)
+# The flag is consumed by NVCC's host compiler, which may differ from CXX.
+# Keep newer Clang's C++20 mangling compatible without passing Clang flags to GCC.
+if(CMAKE_CUDA_HOST_COMPILER_ID MATCHES "Clang" AND CMAKE_CUDA_HOST_COMPILER_VERSION VERSION_GREATER_EQUAL 18)
   list(APPEND CUDA_NVCC_FLAGS "-Xcompiler=-fclang-abi-compat=17")
 endif()
 

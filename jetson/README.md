@@ -34,3 +34,7 @@ Advance the upstream base and local package revision together, refresh the locke
 The manual `Jetson Torch wheel` workflow uses a native self-hosted runner with labels `linux`, `ARM64`, `jetson-orin` and repository variable `JETSON_GPU_LOCK`. It retains outputs on the runner and does not publish them automatically.
 
 Torchvision 0.29.1 is built from upstream commit `1f1a920d685d46dfbe187934b785b7ecb7a182f2` with our newly built Torch. Its version is `0.29.1+orinfer1`; the acceptance check runs its CUDA NMS operator. Other compiled extensions must be built against the matching Torch ABI. General aarch64 CUDA wheels are not assumed to support SM87.
+
+## Local compiler compatibility patch
+
+`cmake/public/cuda.cmake` selects the Clang ABI compatibility flag from NVCC's actual host compiler identity, rather than the independent C++ compiler. This profile uses Clang 20 for C++ and GCC 11 for CUDA host compilation. Passing `-fclang-abi-compat=17` to GCC fails before any CUDA kernel compiles. CMake 4.4 records the host compiler identity used by this patch; the native CUDA build exercises the corrected flags.
