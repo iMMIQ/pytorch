@@ -11,19 +11,30 @@ jobs:
     if: github.repository == 'iMMIQ/pytorch'
     runs-on: [self-hosted, linux, ARM64, jetson-orin]
     timeout-minutes: 360
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        python-version: ['3.11', '3.12', '3.13', '3.14']
+    env:
+      JETSON_PYTHON_VERSION: ${{ matrix.python-version }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
+      - name: Configure persistent build directories
+        run: |
+          echo "JETSON_CCACHE_DIR=$RUNNER_TOOL_CACHE/jetson-torch-ccache" >> "$GITHUB_ENV"
+          echo "JETSON_ARTIFACT_DIR=$RUNNER_TOOL_CACHE/jetson-torch-artifacts/$GITHUB_SHA" >> "$GITHUB_ENV"
       - name: Initialize pinned submodules
         run: git submodule update --init --recursive --depth 1 --jobs 4
       - name: Build native wheel
-        run: bash jetson/run.sh build
+        run: bash jetson/run.sh build "$JETSON_ARTIFACT_DIR"
       - name: Build matching torchvision
-        run: bash jetson/run.sh vision
+        run: bash jetson/run.sh vision "$JETSON_ARTIFACT_DIR"
       - name: Verify on Orin
         env:
           JETSON_GPU_LOCK: ${{ vars.JETSON_GPU_LOCK }}
-        run: bash jetson/run.sh test
+        run: bash jetson/run.sh test "$JETSON_ARTIFACT_DIR"
       - name: Record output directory
-        run: echo "Artifacts retained on the runner in $PWD/jetson/artifacts"
+        run: echo "Python $JETSON_PYTHON_VERSION artifacts retained on the runner in $JETSON_ARTIFACT_DIR"

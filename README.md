@@ -1,4 +1,4 @@
-**Torch for Jetson:** this fork maintains the native SM87 / CUDA 12.6 / Python 3.12 build used by [orinfer](https://github.com/iMMIQ/orinfer). See [build, verification and release instructions](jetson/README.md).
+**Torch for Jetson:** this fork maintains native SM87 / CUDA 12.6 wheels for Python 3.11-3.14, used by [orinfer](https://github.com/iMMIQ/orinfer). See [build, verification and release instructions](jetson/README.md).
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://github.com/pytorch/pytorch/raw/main/docs/source/_static/img/pytorch-logo-light.png" />
@@ -168,7 +168,7 @@ They require JetPack 4.2 and above, and [@dusty-nv](https://github.com/dusty-nv)
 
 #### Prerequisites
 If you are installing from source, you will need:
-- Python 3.10 or later
+- Python 3.11 or later
 - A compiler that fully supports C++20, such as clang or gcc (gcc 11.3.0 or newer is required, on Linux)
 - Visual Studio or Visual Studio Build Tool (Windows only)
 - At least 10 GB of free disk space
@@ -211,7 +211,7 @@ If you want to compile with CUDA support, [select a supported version of CUDA fr
 Note: You could refer to the [cuDNN Support Matrix](https://docs.nvidia.com/deeplearning/cudnn/backend/latest/reference/support-matrix.html) for cuDNN versions with the various supported CUDA, CUDA driver, and NVIDIA hardware.
 
 If you want to disable CUDA support, export the environment variable `USE_CUDA=0`.
-Other potentially useful environment variables are documented in `cmake/EnvVarForwarding.cmake`.  If
+Other potentially useful environment variables are documented in [`cmake/EnvVarForwarding.cmake`](./cmake/EnvVarForwarding.cmake).  If
 CUDA is installed in a non-standard location, set PATH so that the nvcc you
 want to use can be found (e.g., `export PATH=/usr/local/cuda-12.8/bin:$PATH`).
 
@@ -225,7 +225,7 @@ If you want to compile with ROCm support, install
 By default the build system expects ROCm to be installed in `/opt/rocm`. If ROCm is installed in a different directory, the `ROCM_PATH` environment variable must be set to the ROCm installation directory. The build system automatically detects the AMD GPU architecture. Optionally, the AMD GPU architecture can be explicitly set with the `PYTORCH_ROCM_ARCH` environment variable [AMD GPU architecture](https://rocm.docs.amd.com/projects/install-on-linux/en/latest/reference/system-requirements.html#supported-gpus)
 
 If you want to disable ROCm support, export the environment variable `USE_ROCM=0`.
-Other potentially useful environment variables are documented in `cmake/EnvVarForwarding.cmake`.
+Other potentially useful environment variables are documented in [`cmake/EnvVarForwarding.cmake`](./cmake/EnvVarForwarding.cmake).
 
 ##### Intel GPU Support
 If you want to compile with Intel GPU support, follow these
@@ -233,7 +233,7 @@ If you want to compile with Intel GPU support, follow these
 - Intel GPU is supported for Linux and Windows.
 
 If you want to disable Intel GPU support, export the environment variable `USE_XPU=0`.
-Other potentially useful environment variables are documented in `cmake/EnvVarForwarding.cmake`.
+Other potentially useful environment variables are documented in [`cmake/EnvVarForwarding.cmake`](./cmake/EnvVarForwarding.cmake).
 
 #### Get the PyTorch Source
 
@@ -584,9 +584,8 @@ Pointers to get you started:
 
 ## Communication
 * Forums: Discuss implementations, research, etc. https://discuss.pytorch.org
-* GitHub Issues: Bug reports, feature requests, install issues, RFCs, thoughts, etc.
-* Slack: The [PyTorch Slack](https://pytorch.slack.com/) hosts a primary audience of moderate to experienced PyTorch users and developers for general chat, online discussions, collaboration, etc. If you are a beginner looking for help, the primary medium is [PyTorch Forums](https://discuss.pytorch.org). If you need a slack invite, please fill this form: https://goo.gl/forms/PP1AGvNHpSaJP8to1
-* Newsletter: No-noise, a one-way email newsletter with important announcements about PyTorch. You can sign-up here: https://eepurl.com/cbG0rv
+* GitHub Issues: Bug reports, feature requests, install issues, RFCs, thoughts, etc. See the [issue lifecycle](CONTRIBUTING.md#issue-lifecycle) for how they are handled.
+* Slack: The [PyTorch Slack](https://pytorch.slack.com/) hosts a primary audience of moderate to experienced PyTorch users and developers for general chat, online discussions, collaboration, etc.
 * Facebook Page: Important announcements about PyTorch. https://www.facebook.com/pytorch
 * For brand guidelines, please visit our website at [pytorch.org](https://pytorch.org/)
 
@@ -594,10 +593,10 @@ Pointers to get you started:
 
 Typically, PyTorch has three minor releases a year. Please let us know if you encounter a bug by [filing an issue](https://github.com/pytorch/pytorch/issues).
 
-We appreciate all contributions. If you are planning to contribute back bug-fixes, please do so without any further discussion.
-
-If you plan to contribute new features, utility functions, or extensions to the core, please first open an issue and discuss the feature with us.
-Sending a PR without discussion might end up resulting in a rejected PR because we might be taking the core in a different direction than you might be aware of.
+We appreciate all contributions. Whether you plan to contribute a bug-fix or a new feature, please first open an issue (or find an existing one) and discuss it with us.
+Once a maintainer marks the issue "actionable", you can send a PR for it.
+Sending a PR without an actionable issue will result in the PR being automatically closed.
+See the [Issue and PR Workflow](CONTRIBUTING.md#issue-and-pr-workflow) for details.
 
 To learn more about making a contribution to PyTorch, please see our [Contribution page](CONTRIBUTING.md). For more information about PyTorch releases, see [Release page](RELEASE.md).
 

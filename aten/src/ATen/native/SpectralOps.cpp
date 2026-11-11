@@ -1,6 +1,5 @@
 #define TORCH_ASSERT_ONLY_METHOD_OPERATORS
 #include <ATen/core/Tensor.h>
-#include <ATen/Config.h>
 #include <ATen/TensorSubclassLikeUtils.h>
 #include <ATen/detail/CUDAHooksInterface.h>
 #include <ATen/native/SpectralOpsUtils.h>
@@ -246,6 +245,8 @@ Tensor fft_r2c(std::string_view function_name,
               " expects a real input tensor, but got ", input.scalar_type());
   TORCH_CHECK(!out.defined() || out.is_complex(), function_name,
               " expects a complex output tensor, but got ", out.scalar_type());
+  TORCH_CHECK(!out.defined() || out.device() == input.device(), function_name,
+              " expects out tensor on device ", input.device(), " but got ", out.device());
   input = promote_tensor_fft(input);
   const auto input_dim = input.dim();
   const auto dim = maybe_wrap_dim(unwrapped_dim, input_dim, /*wrap_scalar=*/false);

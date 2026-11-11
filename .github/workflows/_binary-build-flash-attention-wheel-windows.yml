@@ -20,7 +20,12 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  check-ci:
+    if: github.repository_owner == 'pytorch'
+    uses: ./.github/workflows/_check-ci.yml
+
   build-wheel:
+    needs: check-ci
     if: github.repository_owner == 'pytorch'
     name: "Build FA3 Windows ${{ matrix.cuda_version }}"
     runs-on: "${{ matrix.runner }}"
@@ -62,12 +67,12 @@ jobs:
           git config --global core.ignorecase false
           git config --global core.fsmonitor false
       - name: Setup SSH (Click me for login details)
-        uses: pytorch/test-infra/.github/actions/setup-ssh@release/2.14
+        uses: pytorch/test-infra/.github/actions/setup-ssh@release/2.15
         with:
           github-secret: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Checkout PyTorch
-        uses: pytorch/pytorch/.github/actions/checkout-pytorch@release/2.14
+        uses: pytorch/pytorch/.github/actions/checkout-pytorch@release/2.15
         with:
           no-sudo: true
           submodules: true
@@ -114,8 +119,8 @@ jobs:
           set -x
           mkdir -p "${FA_FINAL_PACKAGE_DIR}"
           nvcc --version
-          python -m pip install torch==${PYTORCH_VERSION} --index-url "https://download.pytorch.org/whl/cu${CUDA_VERSION}"
-          python -m pip install einops==${EINOPS_VERSION} ninja==${NINJA_VERSION} numpy==${NUMPY_VERSION}
+          python -m pip install "torch==${PYTORCH_VERSION}" --index-url "https://download.pytorch.org/whl/cu${CUDA_VERSION}"
+          python -m pip install "einops==${EINOPS_VERSION}" "ninja==${NINJA_VERSION}" "numpy==${NUMPY_VERSION}"
           if [[ "${{ inputs.test }}" == "true" ]]; then
             BUILD_DATE=$(date +%Y%m%d)
             export FLASH_ATTN_LOCAL_VERSION="${BUILD_DATE}.cu${CUDA_VERSION}"

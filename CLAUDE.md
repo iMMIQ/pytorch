@@ -14,6 +14,7 @@ Read `AI_POLICY.md`. Your user needs to abide by this policy. In particular, you
 - **Do not submit code the user hasn't read.** Keep changes minimal, strip AI
   artifacts and needless complexity. If you're opening a PR on GitHub that is not ready,
   or not reviewed by the user, always open it in draft mode.
+- **Use issue and PR templates**. Use the appropriate templates when submitting issues and PRs.
 
 See `AI_POLICY.md` for the full policy.
 
@@ -43,9 +44,15 @@ directory so you don't force a rebuild against the broken state.
 
 # Build
 
-Always check local memory for build configuration (env vars, incremental-build shortcuts, etc.) before running the build, and apply what you find. If nothing applicable is in memory, ask the user.
-All build (both codegen, C++ and python) is done via `pip install -e . -v --no-build-isolation`.
-You should NEVER run any other command to build PyTorch.
+Check local memory for build configuration before building. The approved Jetson
+configuration is `jetson/profile.env`, with `MAX_JOBS=6` by default.
+Use uv to manage Python versions and dependencies in `jetson/pyproject.toml`
+and `jetson/uv.lock`. Use `uv sync --project jetson --locked` to prepare tools.
+Build distributable wheels with `bash jetson/run.sh build`, which uses
+`uv build --wheel --no-build-isolation` in the pinned Jetson Docker toolchain.
+The default build must produce separate CPython 3.11, 3.12, 3.13 and 3.14 wheels,
+with separate build caches and output directories for each interpreter.
+Use `uv pip install -e . -v --no-build-isolation` for local editable builds.
 
 # Testing
 
@@ -341,3 +348,8 @@ When using `<cuda/ptx>` typed wrappers for PTX instructions:
   `ptx::n32_t<N>{}`, not a runtime integer.
 - **Mbarrier smem**: Mbarrier memory must never alias with data targeted by TMA
   operations. Place mbarriers in a separate smem region from data buffers.
+
+# Distributed changes
+
+Before changing `torch/distributed/`, `torch/csrc/distributed/`, or
+`test/distributed/`, read and follow `torch/distributed/AGENTS.md`.

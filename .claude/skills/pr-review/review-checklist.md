@@ -20,6 +20,7 @@ This checklist covers areas that CI cannot check. Skip items related to linting,
 When a PR introduces new API patterns, carefully evaluate the broader implications:
 
 - [ ] **No flag-based internal access** - Reject patterns like `_internal=True` kwargs that gate internal functionality. These are confusing to reason about, impossible to document properly, and create BC headaches. Use a separate private function instead (e.g., `_my_internal_op()`)
+- [ ] **Positional-only / keyword-only markers** - While historical APIs don't use them, new public APIs (and internal functions) should use `/` and `*` appropriately, e.g. `def my_api(module, /, x, *, dtype=None)`. Either marker can be dropped later without breaking callers, so we always prefer to have them to begin with unless the author explicitly refuses. Put arguments whose names are not part of the documented contract (`self`, callbacks, wrapped objects) before `/`, and optional or configuration arguments after `*`. Leave an argument positional-or-keyword only when both its name and its position are meant to be stable.
 - [ ] **Pattern already exists?** - Before accepting a new pattern, search the codebase to check if this pattern is already established. If not, the PR is introducing a new convention that needs stronger justification
 - [ ] **Documentation implications** - Can this API be clearly documented? Flag-based access creates ambiguity about what is public vs private
 - [ ] **BC implications going forward** - Will this pattern create future BC constraints?
@@ -38,6 +39,14 @@ When a PR introduces new API patterns, carefully evaluate the broader implicatio
 - [ ] **No backward-compatibility hacks** - Unused code is deleted completely, not renamed with underscores or marked with "removed" comments
 - [ ] **Appropriate complexity** - Solutions are as simple as possible for the current requirements
 - [ ] **Documentation shows correct patterns only** - Docs and markdown files should show the right way to do things directly, not anti-patterns followed by corrections. Code examples must have correct indentation, names, and syntax
+
+### Warnings and Logging
+
+Applies to every new `warnings.warn`, `TORCH_WARN*`, and logger `.warning()`/`.error()` call. Deprecation warnings are covered by the deprecation items under PyTorch Infrastructure.
+
+- [ ] **Actionable** - A warning must be something the user can and should act on. The message says what happened, its consequence, and how to fix or silence it. Expected environment variation, internal fallbacks, and missing optional information are not warnings; if ignoring it is the only possible response, drop it
+- [ ] **Right mechanism** - PyTorch is a library: outside the PT2 stack (`torch._dynamo`, `torch._inductor`, `torch.export`, ...) it does not use logging, so user-facing messages go through `warnings.warn` (with a specific category) or `TORCH_WARN*`, and non-actionable messages are removed rather than logged. Within PT2, use `torch._logging`: a module logger registered in `torch._logging._registrations` (so it is controlled by `TORCH_LOGS`), `getArtifactLogger` for artifacts, `warning_once` for repeated warnings, and `trace_structured` for anything that should show up in `tlparse`. Use `log.warning` for actionable messages and `log.debug`/`log.info` for diagnostics. `.error()` is limited to cases where execution cannot continue, not conditions it recovers from
+- [ ] **No spam** - Flag any warning that can fire repeatedly in a real workload: per call, per op, per iteration, per compile. Anything reachable from a hot path or loop must be deduplicated (`TORCH_WARN_ONCE`, `warning_once`, a module-level flag)
 
 ### Initialization and Module Design
 
@@ -152,6 +161,12 @@ When a PR touches code in the scope of any item below, **stop and investigate** 
 
 - [ ] **_make_wrapper_subclass** — PR creates tensor subclasses by calling `torch.Tensor.__new__()` directly instead of using `torch.Tensor._make_wrapper_subclass()` which properly sets up the subclass wrapper
 - [ ] **__tensor_flatten__ / __tensor_unflatten__** — PR adds a tensor subclass without implementing `__tensor_flatten__()` and `__tensor_unflatten__()`, breaking serialization and `torch.compile` support
+
+### CI Runner Labels
+
+When a PR adds CI (a workflow, job, matrix or matrix entry) or changes a CI runner label, even if only its prefix changes:
+
+- [ ] **Runner naming standard** — PR adds or changes a runner label, or adds CI that inherits one from an input, matrix or dispatch default or option, and the label breaks the runner naming standard in [ci-runner-naming.md](ci-runner-naming.md). If no other CI in this repo uses that label, this always means **Request Changes**; if other CI already uses it, give a short non-blocking heads-up instead (an exception to "Everything is a must-fix")
 
 ### Miscellaneous
 
